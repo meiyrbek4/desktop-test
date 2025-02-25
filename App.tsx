@@ -1,118 +1,109 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import React, {useState} from 'react';
+import {Dimensions, Platform, Text, View} from 'react-native-macos';
+import styled from 'styled-components/native';
 
-import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+const height = Dimensions.get('screen').height;
+const width = Dimensions.get('screen').width;
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+const NavigationContainer = styled.View`
+  height: ${height}px;
+  width: 300px;
+  background-color: #ccc;
+  align-items: center;
+  padding: 30px 0;
+  gap: 30px;
+`;
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+const Button = styled.Pressable<{$pressed: boolean}>`
+  width: 80%;
+  background-color: ${(props: any) => (props.$pressed ? '#fff' : '#eee')};
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  padding: 5px 0;
+`;
 
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+const AppLayout = styled.View`
+  display: flex;
+  flex-shrink: 1;
+  flex-direction: row;
+  flex-wrap: wrap;
+  padding: 20px;
+  gap: 10px;
+
+  /* display: grid;
+  grid-template-columns: 100px 100px;
+  gap: 20px; */
+`;
+
+const Wrapper = styled.Pressable<{$pressed: boolean}>`
+  display: flex;
+  flex-grow: 1;
+  height: 100px;
+  width: 100px;
+  background-color: ${props => (props.$pressed ? 'blue' : 'red')};
+`;
+
+const App = () => {
+  const [pressed, setPressed] = useState({
+    index: null,
+    pressed: false,
+  });
+
   return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
+    <View style={{flexDirection: 'row'}}>
+      <NavigationContainer>
+        <Button
+          $pressed={pressed.pressed && pressed.index === null}
+          onPressIn={() =>
+            setPressed({
+              index: null,
+              pressed: true,
+            })
+          }
+          onPressOut={() =>
+            setPressed({
+              index: null,
+              pressed: false,
+            })
+          }>
+          <Text style={{fontSize: 30}}>
+            {Platform.OS === 'macos' ? 'App' : 'Other OS'}
+          </Text>
+        </Button>
+        <Button>
+          <Text style={{fontSize: 30}}>
+            {Platform.OS === 'macos' ? 'Settings' : 'Other OS'}
+          </Text>
+        </Button>
+        <Button>
+          <Text style={{fontSize: 30}}>
+            {Platform.OS === 'macos' ? 'About' : 'Other OS'}
+          </Text>
+        </Button>
+      </NavigationContainer>
+      <AppLayout>
+        {Array.from({length: 10}, (el, i) => (
+          <Wrapper
+            key={i}
+            $pressed={pressed.pressed && pressed.index === i}
+            onPressIn={() =>
+              setPressed({
+                index: i,
+                pressed: true,
+              })
+            }
+            onPressOut={() =>
+              setPressed({
+                index: null,
+                pressed: false,
+              })
+            }
+          />
+        ))}
+      </AppLayout>
     </View>
   );
-}
-
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-}
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
+};
 
 export default App;
